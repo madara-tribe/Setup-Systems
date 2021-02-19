@@ -11,3 +11,6 @@ do2:
 
 run:
 	jupyter notebook &
+AD = 54.199.223.28
+in:
+	http://${AD}:8888/
