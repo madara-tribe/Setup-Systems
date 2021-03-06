@@ -54,7 +54,7 @@ import trainer.train
 ```
 # reference
 
-https://uxmilk.jp/41603
+[site]https://uxmilk.jp/41603
 
 https://qiita.com/Kensuke-Mitsuzawa/items/7717f823df5a30c27077
 
