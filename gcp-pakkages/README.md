@@ -54,8 +54,8 @@ import trainer.train
 ```
 # reference
 
-![how to make module1]https://uxmilk.jp/41603
+![how to make module1](https://uxmilk.jp/41603)
 
-![how to make module2]https://qiita.com/Kensuke-Mitsuzawa/items/7717f823df5a30c27077
+![how to make module2](https://qiita.com/Kensuke-Mitsuzawa/items/7717f823df5a30c27077)
 
-![exsample-repository]https://github.com/fizyr/keras-maskrcnn
+![exsample-repository](https://github.com/fizyr/keras-maskrcnn)
