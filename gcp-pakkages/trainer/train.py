@@ -1,7 +1,7 @@
 import argparse
 import os, sys, cv2
 import numpy as np
-import tensorflow
+import tensorflow as tf
 from tensorflow.keras.callbacks import *
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils  import to_categorical
@@ -51,5 +51,6 @@ def train():
   
 
 if __name__ == '__main__':
-  train()
+    tf.logging.set_verbosity("INFO")
+    train()
   
