@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.layers import GlobalAveragePooling2D, Reshape, Dense, multiply, add, Permute, Conv2D
 from tensorflow.keras import backend as K
 
