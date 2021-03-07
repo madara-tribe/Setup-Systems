@@ -37,7 +37,4 @@ def train():
   model.fit(X, y, batch_size=4, epochs=2, callbacks=callback, validation_data=(X_val, y_val), shuffle=True)
   
 
-if __name__ == '__main__':
-    tf.logging.set_verbosity("INFO")
-    train()
   
