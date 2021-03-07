@@ -1,6 +1,6 @@
+import tensorflow as tf
 import os, sys, cv2
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras.callbacks import *
 from tensorflow.keras.utils import to_categorical
 from . import cnn_model
