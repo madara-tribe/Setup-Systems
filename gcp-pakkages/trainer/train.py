@@ -1,25 +1,15 @@
-import argparse
 import os, sys, cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.callbacks import *
-from tensorflow.keras.utils  import to_categorical
+from tensorflow.keras.utils import to_categorical
 from . import cnn_model
 from tensorflow.keras.datasets import cifar10
 
-def get_argparser():
-    parser = argparse.ArgumentParser()
-   
-    parser.add_argument('--batch_size', help='batch size', default=1, type=int)
-    parser.add_argument('--num_ep', help='num epochs', default=10, type=int)
-    parser.add_argument('--classes', help='num clsses', default=10, type=int)
-    parser.add_argument('--weight_dir', help='folder path to save trained weight', default='weight_dir', type=str)
-    parser.add_argument('--ep', help='num Epochs', default=20, type=int)
-    return parser
 
 def load_label(y, num_classes):
     y = np.array(y)
-    return tensorflow.keras.utils.to_categorical(y, num_classes=num_classes)
+    return to_categorical(y, num_classes=num_classes)
 
 
 def load_dataset():
@@ -35,8 +25,7 @@ def load_dataset():
 
 
 def train():
-  opts = get_argparser().parse_args()
-  model = cnn_model.create_model(input_shape=(32,32,3), num_cls=opts.classes)
+  model = cnn_model.create_model(input_shape=(32,32,3), num_cls=10)
   
   X, y, X_val, y_val = load_dataset()
 
@@ -45,7 +34,7 @@ def train():
   callback = [reduce_lr]
 
   # train
-  model.fit(X, y, batch_size=opts.batch_size, epochs=opts.ep, callbacks=callback, validation_data=(X_val, y_val), shuffle=True)
+  model.fit(X, y, batch_size=4, epochs=2, callbacks=callback, validation_data=(X_val, y_val), shuffle=True)
   
 
 if __name__ == '__main__':
