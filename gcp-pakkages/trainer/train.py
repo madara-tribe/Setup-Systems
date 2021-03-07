@@ -3,10 +3,8 @@ import os, sys, cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.callbacks import *
-from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils  import to_categorical
-from tensorflow.keras.layers import *
-from models.cnn_model import create_model
+from . import cnn_model
 from tensorflow.keras.datasets import cifar10
 
 def get_argparser():
@@ -38,7 +36,7 @@ def load_dataset():
 
 def train():
   opts = get_argparser().parse_args()
-  model = create_model(input_shape=(32,32,3), num_cls=opts.classes)
+  model = cnn_model.create_model(input_shape=(32,32,3), num_cls=opts.classes)
   
   X, y, X_val, y_val = load_dataset()
 
