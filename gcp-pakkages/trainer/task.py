@@ -1,86 +1,77 @@
-import tensorflow as tf
-import os, sys
-import numpy as np
-from tensorflow.keras.callbacks import *
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.datasets import cifar10
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import *
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the \"License\");
+# you may not use this file except in compliance with the License.\n",
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an \"AS IS\" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import argparse
+
+import data_utils
+import model
 
 
+def train_model(args):
+    train_features, test_features, train_labels, test_labels = \
+        data_utils.load_data(args)
 
-def squeeze_excite_block(input, ratio=16):
-    init = input
-    channel_axis = -1
-    filters = input.shape[-1]
-    se_shape = (1, 1, filters)
+    sonar_model = model.sonar_model()
 
-    se = GlobalAveragePooling2D()(init)
-    se = Reshape(se_shape)(se)
-    se = Dense(filters // ratio, activation='relu', kernel_initializer='he_normal', use_bias=False)(se)
-    se = Dense(filters, activation='sigmoid', kernel_initializer='he_normal', use_bias=False)(se)
-    x = multiply([init, se])
-    return x
+    sonar_model.fit(train_features, train_labels, epochs=args.epochs,
+                    batch_size=args.batch_size)
 
+    score = sonar_model.evaluate(test_features, test_labels,
+                                 batch_size=args.batch_size)
+    print(score)
 
-def spatial_squeeze_excite_block(input):
-    se = Conv2D(1, (1, 1), activation='sigmoid', use_bias=False,
-                kernel_initializer='he_normal')(input)
+    # Export the trained model
+    sonar_model.save(args.model_name)
 
-    x = multiply([input, se])
-    return x
+    if args.model_dir:
+        # Save the model to GCS
+        data_utils.save_model(args.model_dir, args.model_name)
 
 
-def channel_spatial_squeeze_excite(input, ratio=16):
-    cse = squeeze_excite_block(input, ratio)
-    sse = spatial_squeeze_excite_block(input)
+def get_args():
+    parser = argparse.ArgumentParser(description='Keras Sonar Example')
+    parser.add_argument('--model-dir',
+                        type=str,
+                        help='Where to save the model')
+    parser.add_argument('--model-name',
+                        type=str,
+                        default='sonar_model.h5',
+                        help='What to name the saved model file')
+    parser.add_argument('--batch-size',
+                        type=int,
+                        default=4,
+                        help='input batch size for training (default: 4)')
+    parser.add_argument('--test-split',
+                        type=float,
+                        default=0.2,
+                        help='split size for training / testing dataset')
+    parser.add_argument('--epochs',
+                        type=int,
+                        default=10,
+                        help='number of epochs to train (default: 10)')
+    parser.add_argument('--seed',
+                        type=int,
+                        default=42,
+                        help='random seed (default: 42)')
+    args = parser.parse_args()
+    return args
 
-    x = add([cse, sse])
-    return x
-    
 
-def create_model(input_shape=(32,32,3), num_cls=10):
-  inputs = Input(shape=input_shape)
-  o = Conv2D(32, (3, 3), padding='same')(inputs)
-  o = channel_spatial_squeeze_excite(o)
-  o = MaxPooling2D((2, 2))(o)
-  o = Conv2D(64, (3, 3), padding='same')(o)
-  o = channel_spatial_squeeze_excite(o)
-  o = MaxPooling2D((2, 2))(o)
-  o = Conv2D(64, (3, 3), padding='same')(o)
-  o = channel_spatial_squeeze_excite(o)
-  o = Dense(64, activation='relu')(o)
-  o = GlobalAveragePooling2D()(o)
-  o = Dense(num_cls, activation='softmax')(o)
-  model = Model(inputs=inputs, outputs=o)
-  model.compile(optimizer='adam', loss='categorical_crossentropy')
-  return model
+def main():
+    args = get_args()
+    train_model(args)
 
 
-def load_label(y, num_classes):
-    y = np.array(y)
-    return to_categorical(y, num_classes=num_classes)
-    
-    
-def load_dataset():
-    num_classes=10
-    (X, y), (X_val, y_val) = cifar10.load_data()
-    X = X/255
-    X_val = X_val/255
-    y = load_label(y, num_classes)
-    y_val = load_label(y_val, num_classes)
-    return X, y, X_val, y_val
-    
-    
-def train():
-  model = create_model(input_shape=(32,32,3), num_cls=10)
-  
-  X, y, X_val, y_val = load_dataset()
-  # callback
-  reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3, verbose=1)
-  callback = [reduce_lr]
-  # train
-  model.fit(X, y, batch_size=4, epochs=2, callbacks=callback, validation_data=(X_val, y_val), shuffle=True)
-
-if __name__=='__main__':
-    train()
+if __name__ == '__main__':
+    main()
