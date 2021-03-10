@@ -15,6 +15,6 @@ sudo docker build -f Dockerfile -t $IMAGE_URI ./
 sudo docker run $IMAGE_URI --epochs 1
 sudo docker push $IMAGE_URI
 #gcloud components install beta
-gcloud beta ai-platform jobs submit training $JOB_NAME   --region $REGION   --master-image-uri $IMAGE_URI   
---scale-tier BASIC   --   --model-dir=$BUCKET_ID   --epochs=10
+gcloud beta ai-platform jobs submit training $JOB_NAME --region $REGION --master-image-uri $IMAGE_URI --scale-tier BASIC -- --model-dir=$BUCKET_ID --epochs=10
+
 #gsutil ls gs://$BUCKET_ID/sonar_*
