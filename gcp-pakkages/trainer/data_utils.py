@@ -28,9 +28,9 @@ def download(bucket_name, folder_name):
         blob.download_to_filename(temp_local_filename)
         img = cv2.imread(temp_local_filename)
         images.append(cv2.resize(img, (224, 224)))
-        if len(images)==400:
+        if len(images)==200:
             c += 1
-        elif len(images)==600:
+        elif len(images)==400:
             c += 1
         labels.append(c)
         #print(f"Blob {blob_name} downloaded to {temp_local_filename}.")
