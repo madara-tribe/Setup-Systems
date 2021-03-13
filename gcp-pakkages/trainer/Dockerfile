@@ -1,4 +1,4 @@
-ROM tensorflow/tensorflow:nightly
+FROM tensorflow/tensorflow:nightly
 WORKDIR /root
 ENV DEBIAN_FRONTEND=noninteractive
 
