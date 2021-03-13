@@ -1,4 +1,8 @@
 # !/bin/sh
+export BUCKET_ID=output-aiplatform
+gsutil mb gs://$BUCKET_ID/
+export PROJECT_ID=$(gcloud config list project --format "value(core.project)")
+
 sudo docker run busybox date
 gcloud auth configure-docker
 PROJECT_ID=$(gcloud config list project --format "value(core.project)")
