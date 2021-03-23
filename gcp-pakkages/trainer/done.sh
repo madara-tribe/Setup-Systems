@@ -1,4 +1,6 @@
 # !/bin/sh
+gsutil mb gs://mlops-test-bakura/
+
 export BUCKET_ID=output-aiplatform
 gsutil mb gs://$BUCKET_ID/
 export PROJECT_ID=$(gcloud config list project --format "value(core.project)")
