@@ -1,14 +1,30 @@
 import argparse
+from google.cloud import storage
 import data_utils
 import model
+import tempfile
+import os
 
+
+def load_weight_from_gcs():
+    client = storage.Client()
+    bucket_name = 'output-aiplatform'
+    folder_name = 'sonar_20210323_084454'
+    file_name= 'sonar_model.h5'
+    blobs = list(client.list_blobs(bucket_name, prefix=folder_name))
+    blob = blobs[0]
+    _, _ext = os.path.splitext(blob.name)
+    _, temp_local_filename = tempfile.mkstemp(suffix=_ext)
+    blob.download_to_filename(temp_local_filename)
+    return temp_local_filename
 
 def train_model(args):
     train_features, test_features, train_labels, test_labels = \
         data_utils.load_data(args)
 
     sonar_model = model.sonar_model()
-
+    keras_weight_file = load_weight_from_gcs()
+    sonar_model.load_weights(keras_weight_file)
     sonar_model.fit(train_features, train_labels, epochs=args.epochs,
                     batch_size=args.batch_size)
 
