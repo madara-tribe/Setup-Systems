@@ -2,12 +2,12 @@
 do1:
 	ipython
 	# from notebook.auth import passwd
-	# passwd() ==>OUTPUT_ID
+	# passwd() ==> OUTPUT_ID
 do2:
 	sudo vi ~/.jupyter/jupyter_notebook_config.py
-	# c.NotebookApp.ip = '*'
-        #c.NotebookApp.open_browser = False
-        #c.NotebookApp.password = ${OUTPUT_ID}
+	c.NotebookApp.ip = '*'
+        c.NotebookApp.open_browser = False
+        c.NotebookApp.password = ${OUTPUT_ID}
 
 run:
 	jupyter notebook &
